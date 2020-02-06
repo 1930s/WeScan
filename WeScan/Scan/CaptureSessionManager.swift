@@ -73,7 +73,7 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
         }
         
         captureSession.beginConfiguration()
-        captureSession.sessionPreset = AVCaptureSession.Preset.photo
+        captureSession.sessionPreset = .photo
         
         photoOutput.isHighResolutionCaptureEnabled = true
         
@@ -148,11 +148,10 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
             delegate?.captureSessionManager(self, didFailWithError: error)
             return
         }
-        
+        CaptureSession.current.setImageOrientation()
         let photoSettings = AVCapturePhotoSettings()
         photoSettings.isHighResolutionPhotoEnabled = true
         photoSettings.isAutoStillImageStabilizationEnabled = true
-        
         photoOutput.capturePhoto(with: photoSettings, delegate: self)
     }
     
@@ -163,15 +162,15 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
             let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
             return
         }
-        
-        let finalImage = CIImage(cvPixelBuffer: pixelBuffer)
-        let imageSize = finalImage.extent.size
-        
+
+        let imageSize = CGSize(width: CVPixelBufferGetWidth(pixelBuffer), height: CVPixelBufferGetHeight(pixelBuffer))
+
         if #available(iOS 11.0, *) {
-            VisionRectangleDetector.rectangle(forImage: finalImage) { (rectangle) in
+            VisionRectangleDetector.rectangle(forPixelBuffer: pixelBuffer) { (rectangle) in
                 self.processRectangle(rectangle: rectangle, imageSize: imageSize)
             }
         } else {
+            let finalImage = CIImage(cvPixelBuffer: pixelBuffer)
             CIRectangleDetector.rectangle(forImage: finalImage) { (rectangle) in
                 self.processRectangle(rectangle: rectangle, imageSize: imageSize)
             }
@@ -236,14 +235,13 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
 }
 
 extension CaptureSessionManager: AVCapturePhotoCaptureDelegate {
-    
+
+    // swiftlint:disable function_parameter_count
     func photoOutput(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingPhoto photoSampleBuffer: CMSampleBuffer?, previewPhoto previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
         if let error = error {
             delegate?.captureSessionManager(self, didFailWithError: error)
             return
         }
-        
-        CaptureSession.current.setImageOrientation()
         
         isDetecting = false
         rectangleFunnel.currentAutoScanPassCount = 0
@@ -266,8 +264,6 @@ extension CaptureSessionManager: AVCapturePhotoCaptureDelegate {
             delegate?.captureSessionManager(self, didFailWithError: error)
             return
         }
-        
-        CaptureSession.current.setImageOrientation()
         
         isDetecting = false
         rectangleFunnel.currentAutoScanPassCount = 0

@@ -1,11 +1,11 @@
 # WeScan
-
+ 
 <p align="center">
     <img width="900px" src="Assets/WeScan-Banner.jpg">
 </p>
 
 <p align="center">
-<img src="https://travis-ci.com/WeTransfer/WeScan.svg?token=Ur5V2zzKmBJLmMYHKJTF&branch=master"/>
+<img src="https://app.bitrise.io/app/df00af454f27891d.svg?token=spjxNvzjnRqug6GfGM3_Lg"/>
 <img src="https://img.shields.io/cocoapods/v/WeScan.svg?style=flat"/>
 <img src="https://img.shields.io/cocoapods/l/WeScan.svg?style=flat"/>
 <img src="https://img.shields.io/cocoapods/p/WeScan.svg?style=flat"/>
@@ -27,25 +27,24 @@ It's modelled after `UIImagePickerController`, which makes it a breeze to use.
 
 ## Features
 
-- [x] Fast
+- [x] Fast and lightweight
 - [x] Live scanning of documents
 - [x] Edit detected rectangle
 - [x] Auto scan and flash support
-- [x] Lightweight dependency
+- [x] Support for both PDF and UIImage
 - [x] Translated to English, Chinese, Italian, Portuguese, and French
 - [ ] Batch scanning
 
 ## Demo
 
 <p align="left">
-    <img src="Assets/WeScan.gif">
+    <img width="350px" src="Assets/WeScan.gif">
 </p>
 
 ## Requirements
 
-- Swift 4.2
+- Swift 5.0
 - iOS 10.0+
-- Xcode 9.x
 
 <br>
 
@@ -151,7 +150,7 @@ present(scannerViewController, animated: true)
 
 #### Example Implementation
 ```objc
-ImageScannerController *scannerViewController = [ImageScannerController new];
+ImageScannerController *scannerViewController = [[ImageScannerController alloc] init];
 [self presentViewController:scannerViewController animated:YES completion:nil];
 ```
 
